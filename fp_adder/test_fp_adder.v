@@ -39,7 +39,7 @@ module test_fp_adder;
             // $display("Test %d: a = %f, b = %f, sum = %f, result = %f", i, a_real, b_real, sum_real, $bitstoreal(sum));
             
             if (sum_bin !== sum) begin
-				$display("\033[31mWrong Answer!");
+                $display("\033[31mWrong Answer!");
                 $display("Test %d: a = %h, b = %h, sum = %h, result = %h\033[0m", i, a_bin, b_bin, sum_bin, sum);
             end else begin
                 $display("\033[32mAccepted");
