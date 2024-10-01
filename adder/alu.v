@@ -1,4 +1,4 @@
-`include "pcounter.v"
+`include "adder/pcounter.v"
 
 module top_module();
     wire [31:0] pc;

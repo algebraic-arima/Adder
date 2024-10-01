@@ -1,12 +1,12 @@
 module adder(
-    input       [31:0]  a,
-    input       [31:0]  b,
-    output      [31:0]  sum,
+    input       [63:0]  a,
+    input       [63:0]  b,
+    output      [63:0]  sum,
     output              carry
 );
-    wire [31:0] s;
+    wire [63:0] s;
     wire c;
-    adder32 adder32_1(.a(a), .b(b), .cin(1'b0), .sum(s), .carry(c));
+    adder64 adder64(.a(a), .b(b), .cin(1'b0), .sum(s), .carry(c));
     assign sum=s;
     assign carry=c;
 endmodule
@@ -50,16 +50,18 @@ module adder16(
 
 endmodule
 
-module adder32(
-    input       [31:0]  a,
-    input       [31:0]  b,
+module adder64(
+    input       [63:0]  a,
+    input       [63:0]  b,
     input               cin,
-    output      [31:0]  sum,
+    output      [63:0]  sum,
     output              carry
 );
 
-    wire c;
-    adder16 adder16_1(.a(a[15:0]), .b(b[15:0]), .cin(cin), .sum(sum[15:0]), .carry(c));
-    adder16 adder16_2(.a(a[31:16]), .b(b[31:16]), .cin(c), .sum(sum[31:16]), .carry(carry));
+    wire [3:0] c;
+    adder16 adder16_1(.a(a[15:0]), .b(b[15:0]), .cin(cin), .sum(sum[15:0]), .carry(c[0]));
+    adder16 adder16_2(.a(a[31:16]), .b(b[31:16]), .cin(c[0]), .sum(sum[31:16]), .carry(c[1]));
+    adder16 adder16_3(.a(a[47:32]), .b(b[47:32]), .cin(c[1]), .sum(sum[47:32]), .carry(c[2]));
+    adder16 adder16_4(.a(a[63:48]), .b(b[63:48]), .cin(c[2]), .sum(sum[63:48]), .carry(carry));
 
 endmodule
