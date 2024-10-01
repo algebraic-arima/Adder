@@ -14,7 +14,7 @@
  *
  */
 
-`include "adder.v"
+`include "adder-carry.v"
 
 module test_adder;
 	wire [31:0] answer;
