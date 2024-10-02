@@ -14,17 +14,20 @@ module fp_adder(
     reg [10:0] sum_exp;
     reg [63:0] sum_tmp;
     reg c;
+    reg found;
 
-    always @* begin
+    always @(*) begin
         if (a_exp > b_exp) begin
             if (a_sgn ^ b_sgn) begin
                 {c, sum_tmp} = a_tmp - (b_tmp>>(a_exp-b_exp)); 
                 sum_sgn= a_sgn;
-                if(sum_tmp[63]) begin
-                    sum_exp = a_exp;
-                end else begin
-                    sum_exp = a_exp - 1;
-                    sum_tmp = sum_tmp<<1;
+                found=0;
+                for(integer i =0;i<64&&!found;i = i + 1) begin
+                    if(sum_tmp[63-i]) begin
+                        sum_tmp=sum_tmp<<i;
+                        sum_exp=a_exp-i;
+                        found=1;
+                    end
                 end
             end else begin
                 {c, sum_tmp} = a_tmp + (b_tmp>>(a_exp-b_exp)); 
@@ -40,11 +43,13 @@ module fp_adder(
             if (b_sgn ^ a_sgn) begin
                 {c, sum_tmp} = b_tmp - (a_tmp>>(b_exp-a_exp)); 
                 sum_sgn=b_sgn;
-                if(sum_tmp[63]) begin
-                    sum_exp = b_exp;
-                end else begin
-                    sum_exp = b_exp - 1;
-                    sum_tmp = sum_tmp<<1;
+                found=0;
+                for(integer i =0;i<64&&!found;i = i + 1) begin
+                    if(sum_tmp[63-i]) begin
+                        sum_tmp=sum_tmp<<i;
+                        sum_exp=b_exp-i;
+                        found=1;
+                    end
                 end
             end else begin
                 {c, sum_tmp} = b_tmp + (a_tmp>>(b_exp-a_exp)); 
@@ -61,20 +66,24 @@ module fp_adder(
                 if(a_tmp > b_tmp) begin
                     {c, sum_tmp} = a_tmp - b_tmp; 
                     sum_sgn=a_sgn;
-                    if(sum_tmp[63]) begin
-                        sum_exp = a_exp;
-                    end else begin
-                        sum_exp = a_exp - 1;
-                        sum_tmp = sum_tmp<<1;
+                    found=0;
+                    for(integer i =0;i<64&&!found;i = i + 1) begin
+                        if(sum_tmp[63-i]) begin
+                            sum_tmp=sum_tmp<<i;
+                            sum_exp=a_exp-i;
+                            found=1;
+                        end
                     end
                 end else begin
                     {c, sum_tmp} = b_tmp - a_tmp; 
                     sum_sgn=b_sgn;
-                    if(sum_tmp[63]) begin
-                        sum_exp = b_exp;
-                    end else begin
-                        sum_exp = b_exp - 1;
-                        sum_tmp = sum_tmp<<1;
+                    found=0;
+                    for(integer i =0;i<64&&!found;i = i + 1) begin
+                        if(sum_tmp[63-i]) begin
+                            sum_tmp=sum_tmp<<i;
+                            sum_exp=b_exp-i;
+                            found=1;
+                        end
                     end
                 end
             end else begin
@@ -88,8 +97,12 @@ module fp_adder(
                 end
             end
         end
-        if(sum_tmp[10])begin
+        if(sum_tmp[10:0]>11'b10000000000) begin
             sum_tmp=sum_tmp+12'b100000000000;
+        end else if(sum_tmp[10:0]==11'b10000000000) begin
+            if(sum_tmp[11]) begin
+                sum_tmp=sum_tmp+12'b100000000000;
+            end
         end
     end
 

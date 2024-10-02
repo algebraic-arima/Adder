@@ -33,7 +33,6 @@ module test_adder;
             
             #1;
             $display("TESTCASE %d: %h + %h = %h carry: %b", i, a, b, answer, carry);
-            $display("RESULT: %f + %f = %f", $bitstoreal(a), $bitstoreal(b), $bitstoreal(res[63:0]));
 
             if (answer !== res[63:0] || carry != res[64]) begin
                 $display("Wrong Answer!");
